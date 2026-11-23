@@ -6,7 +6,7 @@ description: >
   Settings to run the binary with, e.g. listen host/port, https details, log level.
 ---
 
-Below are the options available in their default state. These values can be set with environment variables in the format of `ARGUS_<YAML_PATH_UNDER_SETTINGS>`. For example, `ARGUS_DATA_DATABASE_FILE=/opt/argus.db` would set the default database file location to `/opt/argus.db` (`settings.data.database_file`).
+Below are the options available in their default state. These values can be set with environment variables in the format of `ARGUS_<YAML_PATH_UNDER_SETTINGS>`. For example, `ARGUS_DATA_DATABASE_FILE=/opt/argus.db` would set the default database file location to `/opt/argus.db` (`settings.data.database_file`). List values are comma-separated.
 
 {{< alert title="Note" >}}
 Environment variables in the format ${ENV_VAR} can be used in the `settings.web.basic_auth.password` and `settings.web.basic_auth.username` fields.
@@ -30,7 +30,7 @@ settings:
     timestamps: false # Log with timestamps
   data:
     database_file: data/argus.db # SQLite DB file used to track the state of services
-    file_read_roots: []          # Directories or individual files allowed for local-file deployed-version lookups
+    file_read_paths: []          # Directories or individual files allowed for local-file deployed-version lookups
     readonly: false              # Disable writes to the config.yml
                                  # (create/edit/delete on the UI will not persist restarts)
   web:
@@ -97,14 +97,14 @@ See [Authentication](/docs/help/authentication/) for the permission catalogue, t
 
 ## data
 
-### file_read_roots
+### file_read_paths
 
-`settings.data.file_read_roots` is the allowlist for [file-based deployed-version lookups](/docs/config/service/#deployed-version). It defaults to an empty list, which disables local-file reads. Configure one or more existing directories or regular files. A directory allows files beneath it; a file entry allows only that exact file. Each service's file path must be absolute. Argus reads only regular files up to 1 MiB. In a container, both allowlist entries and service file paths refer to paths inside the container.
+`settings.data.file_read_paths` is the allowlist for [file-based deployed-version lookups](/docs/config/service/#deployed-version). It defaults to an empty list, which disables local-file reads. Configure one or more existing directories or regular files. A directory allows files beneath it; a file entry allows only that exact file. Each service's file path must be absolute. Argus reads only regular files up to 1 MiB. In a container, both allowlist entries and service file paths refer to paths inside the container. The environment variable `ARGUS_DATA_FILE_READ_PATHS` can also provide a comma-separated default list, for example `/opt/releases,/srv/versions`; an explicit `settings.data.file_read_paths` value takes precedence.
 
 ```yaml
 settings:
   data:
-    file_read_roots:
+    file_read_paths:
       - /path/to/allowed/files      # Directory: allows files beneath it
       - /path/to/specific/VERSION   # File: allows only this exact file
 ```

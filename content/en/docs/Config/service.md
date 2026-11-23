@@ -408,15 +408,15 @@ With `method: POST`, you may give a `body: str` to be sent with the request.
 With `method: GET`, you may give a `target_header: str` to target a header rather than the response body.
   {{% /tab %}}
   {{% tab header="file" %}}
-Read the deployed version from a local file available to the Argus process. The path must be absolute and either beneath a directory or exactly match a file configured in `settings.data.file_read_roots`; see [Settings](/docs/config/settings/#data). For container deployments, mount the files into the container and use the path inside the container.
+Read the deployed version from a local file available to the Argus process. The path must be absolute and either beneath a directory or exactly match a file configured in `settings.data.file_read_paths`; see [Settings](/docs/config/settings/#data). For container deployments, mount the files into the container and use the path inside the container.
 
-The regular expression must include a capture group with the version in the first group. Argus uses that group from the first match. Only regular files up to 1 MiB are read, and paths outside the configured roots are rejected.
+The regular expression is optional. Without one, the full file contents are used as the version. When a regular expression is provided, Argus uses the first match; without a template it uses the full match if there are no capture groups, or the last capture group otherwise. `regex_template` can format the match using `$0` for the full match and `$1`, `$2`, etc. for capture groups. Only regular files up to 1 MiB are read, and paths not allowed by `settings.data.file_read_paths` are rejected.
 
 For example, given a `VERSION` file containing `productversion="7.2.2-72806"`:
 ```yaml
 settings:
   data:
-    file_read_roots:
+    file_read_paths:
       - /path/to/allowed/files
 service:
   example:
@@ -425,6 +425,7 @@ service:
       type: file
       path: /path/to/allowed/files/VERSION
       regex: 'productversion="([^"]+)"'
+      # regex_template: '$1'
 ```
   {{% /tab %}}
   {{% tab header="manual" %}}
